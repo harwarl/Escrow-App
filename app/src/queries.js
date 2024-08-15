@@ -1,7 +1,7 @@
 import axios from "axios";
 import { queryClient } from ".";
 import { refund } from "./App";
-const api_url = process.env.SERVER;
+const api_url = "https://escrow-server-4xle.onrender.com";
 
 const axiosInstance = axios.create({
   baseUrl: api_url,
