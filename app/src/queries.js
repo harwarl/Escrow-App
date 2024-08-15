@@ -2,10 +2,10 @@ import axios from "axios";
 import { queryClient } from ".";
 const api_url = "https://escrow-server-4xle.onrender.com";
 
-const axiosInstance = axios.create({
-  baseUrl: api_url,
-  timeout: 1000,
-});
+// const axiosInstance = axios.create({
+//   baseUrl: api_url,
+//   timeout: 1000,
+// });
 
 //Get all the contracts
 export const getContracts = () => {
@@ -13,7 +13,9 @@ export const getContracts = () => {
   return {
     queryKey: ["contracts"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/contracts");
+      const response = await axios.get(
+        "https://escrow-server-4xle.onrender.com/contracts"
+      );
       return response.data.contracts;
     },
   };
@@ -23,7 +25,10 @@ export const getContracts = () => {
 export const postContract = () => {
   return {
     mutationFn: async (newContract) => {
-      const contract = await axiosInstance.post("/contracts", newContract);
+      const contract = await axios.post(
+        "https://escrow-server-4xle.onrender.com/contracts",
+        newContract
+      );
       return contract;
     },
     onSuccess: () => {
@@ -44,8 +49,8 @@ export const updateContract = () => {
       if (refunded) {
         adjustObject.refunded = true;
       }
-      return await axiosInstance.patch(
-        `/contracts/${contractId}`,
+      return await axios.patch(
+        `https://escrow-server-4xle.onrender.com/contracts/${contractId}`,
         adjustObject
       );
     },
