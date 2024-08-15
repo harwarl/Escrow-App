@@ -2,7 +2,6 @@
   "name": "app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://escrow-server-4xle.onrender.com",
   "dependencies": {
     "@tanstack/react-query": "^5.51.23",
     "@tanstack/react-query-devtools": "^5.51.23",

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { queryClient } from ".";
-import { refund } from "./App";
 const api_url = "https://escrow-server-4xle.onrender.com";
 
 const axiosInstance = axios.create({
@@ -10,6 +9,7 @@ const axiosInstance = axios.create({
 
 //Get all the contracts
 export const getContracts = () => {
+  console.log({ api_url });
   return {
     queryKey: ["contracts"],
     queryFn: async () => {
