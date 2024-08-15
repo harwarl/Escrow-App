@@ -134,7 +134,7 @@ function App() {
           ) : (
             <div id="container">
               <h1>Existing Contracts</h1>
-              {getAllContractsQuery.data.map((escrow) => {
+              {(getAllContractsQuery.data || []).map((escrow) => {
                 return (
                   <Escrow key={escrow.address} {...escrow} signer={signer} />
                 );
