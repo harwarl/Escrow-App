@@ -43,16 +43,57 @@ export default function Escrow({
 
     await toast.promise(
       (async () => {
-        await approve(escrowContract, signer);
-        await updateContractMutation.mutateAsync({
-          contractId: _id,
-          status: true,
-        });
+        try {
+          const txn = await approve(escrowContract, signer);
+          await updateContractMutation.mutateAsync({
+            contractId: _id,
+            status: true,
+          });
+          return txn.hash;
+        } catch (error) {
+          if (error.code === 4001) {
+            throw new Error("Transaction rejected by user");
+          } else if (error.code === -32000) {
+            throw new Error("Insufficient funds for gas or transaction value");
+          } else {
+            throw new Error(error.message || "An unknown error occurred");
+          }
+        }
       })(),
       {
         pending: "Approval in progress...",
-        success: "Contract approved successfully!",
-        error: "Approval failed. Please try again.",
+        success: {
+          render({ data }) {
+            return (
+              <div>
+                `Contract approved successfully!` <br />
+                <span
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    color: "blue",
+                  }}
+                  onClick={() => navigator.clipboard.writeText(data)}
+                >
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${data}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on Sepolia Scan
+                  </a>
+                </span>
+                <br />
+                (Click to copy to clipboard)
+              </div>
+            );
+          },
+        },
+        error: {
+          render({ data }) {
+            return `Approval failed. Please try again: ${data}`;
+          },
+        },
       }
     );
   };
@@ -67,16 +108,58 @@ export default function Escrow({
 
     await toast.promise(
       (async () => {
-        await refund(escrowContract, signer);
-        await updateContractMutation.mutateAsync({
-          contractId: _id,
-          refunded: true,
-        });
+        try {
+          const txn = await refund(escrowContract, signer);
+          await updateContractMutation.mutateAsync({
+            contractId: _id,
+            refunded: true,
+          });
+          console.log({ txn });
+          return txn.hash;
+        } catch (error) {
+          if (error.code === 4001) {
+            throw new Error("Transaction rejected by user");
+          } else if (error.code === -32000) {
+            throw new Error("Insufficient funds for gas or transaction value");
+          } else {
+            throw new Error(error.message || "An unknown error occurred");
+          }
+        }
       })(),
       {
         pending: "Refund in progress...",
-        success: "Contract refunded successfully!",
-        error: "Refund failed. Please try again.",
+        success: {
+          render({ data }) {
+            return (
+              <div>
+                `Contract refunded successfully!` <br />
+                <span
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    color: "blue",
+                  }}
+                  onClick={() => navigator.clipboard.writeText(data)}
+                >
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/{data}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on Sepolia Scan
+                  </a>
+                </span>
+                <br />
+                (Click to copy to clipboard)
+              </div>
+            );
+          },
+        },
+        error: {
+          render({ data }) {
+            return `Refund failed. Please try again`;
+          },
+        },
       }
     );
   };
@@ -91,6 +174,10 @@ export default function Escrow({
         <li>
           <div>Beneficiary</div>
           <div>{beneficiary}</div>
+        </li>
+        <li>
+          <div>Contract Address</div>
+          <div>{address}</div>
         </li>
         <li>
           <div>Value</div>

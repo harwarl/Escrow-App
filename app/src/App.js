@@ -11,11 +11,13 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 export async function approve(escrowContract, signer) {
   const approveTxn = await escrowContract.connect(signer).approve();
   await approveTxn.wait();
+  return approveTxn;
 }
 
 export async function refund(escrowContract, signer) {
   const refundTxn = await escrowContract.connect(signer).refund();
   await refundTxn.wait();
+  return refundTxn;
 }
 
 function App() {
@@ -65,7 +67,6 @@ function App() {
 
           return escrowContract.address;
         } catch ({ error }) {
-          console.log({ error });
           if (error.code === 4001) {
             throw new Error("Transaction rejected by user");
           } else if (error.code === -32000) {
@@ -79,7 +80,29 @@ function App() {
         pending: "Deploying contract...",
         success: {
           render({ data }) {
-            return `Contract deployed at address: ${data.error}`;
+            return (
+              <div>
+                `Contract deployed!` <br />
+                <span
+                  style={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    color: "blue",
+                  }}
+                  onClick={() => navigator.clipboard.writeText(data)}
+                >
+                  <a
+                    href={`https://sepolia.etherscan.io/address/${data}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on Sepolia Scan
+                  </a>
+                </span>
+                <br />
+                (Click to copy to clipboard)
+              </div>
+            );
           },
         },
         error: {
